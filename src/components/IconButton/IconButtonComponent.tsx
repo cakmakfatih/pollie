@@ -5,14 +5,16 @@ export function IconButtonComponent({
   text,
   icon,
   onClick,
+  className = "",
 }: {
   text: string;
   icon: ReactElement<typeof IconComponent>;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  className?: string;
 }): ReactNode {
   return (
     <button
-      className="mx-2 rounded-sm text-lg font-bold bg-indigo-800 px-4 flex border-2 border-indigo-500 p-2 py-2 transition-colors duration-150 hover:border-white hover:bg-indigo-700 active:border-indigo-500 items-center"
+      className={`mx-2 rounded-sm text-xl bg-blue-600 flex border-2 shadow-lg border-slate-700 p-1 px-4 transition-colors duration-75 hover:border-white hover:bg-indigo-700 active:border-indigo-500 items-center ${className}`}
       onClick={onClick}
     >
       {icon}
