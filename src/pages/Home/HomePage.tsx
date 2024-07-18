@@ -12,12 +12,12 @@ export function HomePage(): ReactNode {
   return (
     <>
       <IconButtonComponent
-        icon={<IconComponent className="mr-2" size={10} />}
-        text={"Start a New Poll"}
+        icon={<IconComponent icon="add" className="mr-2" size={8} />}
+        text="Create a New Poll"
         onClick={() => {
           navigate("/new-poll");
         }}
-        className="mx-6 min-w-[350px]"
+        className="mx-6 min-w-[350px] py-2"
       />
       <DividerComponent />
       <div className="flex flex-row">
