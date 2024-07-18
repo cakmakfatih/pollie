@@ -10,10 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
     "react": "19.0.0-rc-378b305958-20240710",
     "react-dom": "19.0.0-rc-378b305958-20240710",
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc"
+    "react-router-dom": "^6.25.1"
   },
   "overrides": {
     "@types/react": "npm:types-react@rc",
