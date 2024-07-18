@@ -5,4 +5,5 @@ export default {
     extend: {},
   },
   plugins: [],
+  safelist: ["size-6", "size-8", "size-10", "size-12"],
 };
