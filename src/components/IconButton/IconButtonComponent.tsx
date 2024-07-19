@@ -6,16 +6,19 @@ export function IconButtonComponent({
   icon,
   onClick,
   className = "",
+  disabled = false,
 }: {
   text: string;
   icon: ReactElement<typeof IconComponent>;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   className?: string;
+  disabled?: boolean;
 }): ReactNode {
   return (
     <button
-      className={`select-none rounded-sm text-xl bg-blue-600 flex border-2 shadow-lg border-slate-700 p-1 px-4 transition-colors duration-75 hover:border-white hover:bg-indigo-700 active:border-indigo-500 items-center ${className}`}
+      className={`disabled:opacity-15 select-none rounded-sm text-xl bg-blue-600 flex border-2 shadow-lg border-slate-700 p-1 px-4 transition-colors duration-75 enabled:hover:border-white enabled:hover:bg-indigo-700 enabled:active:border-indigo-500 items-center ${className} `}
       onClick={onClick}
+      disabled={disabled}
     >
       {icon}
       <span>{text}</span>
