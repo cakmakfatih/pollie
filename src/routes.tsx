@@ -1,5 +1,6 @@
 import { HomePage } from "./pages/Home/HomePage";
 import NewPollPage from "./pages/NewPoll";
+import PollPage from "./pages/Poll";
 
 export const routes = [
   {
@@ -9,5 +10,9 @@ export const routes = [
   {
     path: "/new-poll",
     element: <NewPollPage />,
+  },
+  {
+    path: "/polls/:pollId",
+    element: <PollPage />,
   },
 ];

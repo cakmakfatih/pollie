@@ -40,7 +40,7 @@ export function NewPollPage(): ReactNode {
     if (!isOptionsValid) return false;
 
     startTransition(async () => {
-      const result = await apiService.createPoll({
+      await apiService.createPoll({
         title: titleRef.current?.value!,
         duration: durationRef.current?.value! as Duration,
         options,
@@ -48,7 +48,7 @@ export function NewPollPage(): ReactNode {
 
       Store.addNotification({
         title: "Successful!",
-        message: "Poll is shared successfully!.",
+        message: "Poll is shared successfully!",
         type: "success",
         insert: "top",
         container: "top-right",
@@ -59,7 +59,6 @@ export function NewPollPage(): ReactNode {
           onScreen: true,
         },
       });
-      console.log(result);
     });
   };
 
