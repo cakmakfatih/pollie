@@ -6,6 +6,7 @@ import IconButtonComponent from "../../components/IconButton";
 import { apiService } from "../../services/ApiService";
 import { Duration } from "../../shared/interfaces/poll.interface";
 import { Store } from "react-notifications-component";
+import { API_URL } from "../../shared/constants";
 
 export function NewPollPage(): ReactNode {
   const navigate = useNavigate();
@@ -40,25 +41,34 @@ export function NewPollPage(): ReactNode {
     if (!isOptionsValid) return false;
 
     startTransition(async () => {
-      await apiService.createPoll({
+      const createdPoll = await apiService.createPoll({
         title: titleRef.current?.value!,
         duration: durationRef.current?.value! as Duration,
         options,
       });
 
-      Store.addNotification({
-        title: "Successful!",
-        message: "Poll is shared successfully!",
-        type: "success",
-        insert: "top",
-        container: "top-right",
-        animationIn: ["animate__animated", "animate__fadeIn"],
-        animationOut: ["animate__animated", "animate__fadeOut"],
-        dismiss: {
-          duration: 1250,
-          onScreen: true,
-        },
-      });
+      if (createdPoll) {
+        Store.addNotification({
+          title: "Successful!",
+          message:
+            "Poll is created successfully and the URL of the poll is copied to the clipboard!",
+          type: "success",
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: {
+            duration: 2600,
+            onScreen: true,
+          },
+        });
+
+        await navigator.clipboard.writeText(
+          `${API_URL}/polls/${createdPoll.id}`
+        );
+
+        navigate(`/polls/${createdPoll.id}`);
+      }
     });
   };
 

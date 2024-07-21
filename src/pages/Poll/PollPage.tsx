@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, use } from "react";
+import { ReactNode, Suspense, use, useMemo } from "react";
 import DividerComponent from "../../components/Divider";
 import IconComponent from "../../components/Icon";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,6 +6,7 @@ import { Store } from "react-notifications-component";
 import OptionComponent from "../../components/Option";
 import { apiService, GetPollDetailsResponse } from "../../services/ApiService";
 import { IOption } from "../../shared/interfaces/option.interface";
+import { API_URL } from "../../shared/constants";
 
 function PollContent({
   pollPromise,
@@ -14,11 +15,13 @@ function PollContent({
 }): ReactNode {
   const navigate = useNavigate();
   const poll: GetPollDetailsResponse = use(pollPromise);
+  const dateStr: string = useMemo(() => {
+    const date = new Date(poll.created_at);
+    return date.toLocaleString();
+  }, [poll.id]);
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(
-      `http://localhost:3000/polls/${poll.id}`
-    );
+    await navigator.clipboard.writeText(`${API_URL}/polls/${poll.id}`);
     Store.addNotification({
       title: "Successful!",
       message: "Poll URL is successfully copied to clipboard!",
@@ -55,18 +58,18 @@ function PollContent({
             <div className="flex items-center">
               <IconComponent icon="date" size={8} className="text-gray-400" />
               <span className="text-gray-500 mt-1 px-1">
-                Created at: {poll.created_at}
+                Created at: {dateStr}
               </span>
             </div>
           </div>
         </div>
         <div className="flex items-center border border-white/[0.15] py-1 px-2 self-start">
-          <span className="mr-2 text-2xl pl-1 text-yellow-300">05:00</span>
-          <IconComponent icon="duration" size={8} className="text-yellow-300" />
+          <span className="mr-2 text-2xl pl-1">05:00</span>
+          <IconComponent icon="duration" size={8} />
         </div>
       </header>
       <div className="flex mx-2 border border-slate-600 mt-2">
-        <span className="p-2 text-base select-text text-blue-300">
+        <span className="p-2 text-base select-all text-blue-300">
           http://localhost:5173/polls/{poll.id}
         </span>
         <div className="flex-1"></div>

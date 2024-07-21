@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { ICreatePoll } from "../shared/interfaces/poll.interface";
+import { API_URL } from "../shared/constants";
 
 export interface CreatePollResponse {
   id: string;
@@ -56,6 +57,4 @@ class ApiService implements IApiService {
   }
 }
 
-export const apiService = new ApiService(
-  axios.create({ baseURL: "http://localhost:8000" })
-);
+export const apiService = new ApiService(axios.create({ baseURL: API_URL }));
