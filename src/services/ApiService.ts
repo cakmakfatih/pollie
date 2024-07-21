@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
-import { ICreatePoll } from "../types/Poll";
+import { ICreatePoll } from "../shared/interfaces/poll.interface";
 
-interface CreatePollResponse {
+export interface CreatePollResponse {
   id: string;
   remaining_seconds: number;
   is_votable: boolean;
@@ -10,7 +10,24 @@ interface CreatePollResponse {
   created_at: string;
 }
 
-interface IApiService {}
+export interface GetPollDetailsResponse {
+  id: string;
+  options: {
+    id: number;
+    value: string;
+  }[];
+  votes?: {
+    option: number;
+  }[];
+  remaining_seconds: number;
+  title: string;
+  created_at: string;
+}
+
+interface IApiService {
+  createPoll(createPollData: ICreatePoll): Promise<CreatePollResponse>;
+  getPollDetails(pollId: string): Promise<GetPollDetailsResponse>;
+}
 
 class ApiService implements IApiService {
   #httpClient: AxiosInstance;
@@ -24,6 +41,15 @@ class ApiService implements IApiService {
       url: "/api/polls/",
       method: "POST",
       data: createPollData,
+    });
+
+    return response.data;
+  }
+
+  async getPollDetails(pollId: string): Promise<GetPollDetailsResponse> {
+    const response = await this.#httpClient<GetPollDetailsResponse>({
+      url: `/api/polls/${pollId}`,
+      method: "GET",
     });
 
     return response.data;

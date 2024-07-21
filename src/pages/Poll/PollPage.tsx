@@ -1,13 +1,24 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense, use } from "react";
 import DividerComponent from "../../components/Divider";
 import IconComponent from "../../components/Icon";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Store } from "react-notifications-component";
+import OptionComponent from "../../components/Option";
+import { apiService, GetPollDetailsResponse } from "../../services/ApiService";
+import { IOption } from "../../shared/interfaces/option.interface";
 
-export function PollPage(): ReactNode {
+function PollContent({
+  pollPromise,
+}: {
+  pollPromise: Promise<GetPollDetailsResponse>;
+}): ReactNode {
   const navigate = useNavigate();
+  const poll: GetPollDetailsResponse = use(pollPromise);
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(
+      `http://localhost:3000/polls/${poll.id}`
+    );
     Store.addNotification({
       title: "Successful!",
       message: "Poll URL is successfully copied to clipboard!",
@@ -39,12 +50,12 @@ export function PollPage(): ReactNode {
           </button>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold tracking-wide text-yellow-300">
-              What are you most grateful for?
+              {poll.title}
             </h1>
             <div className="flex items-center">
               <IconComponent icon="date" size={8} className="text-gray-400" />
               <span className="text-gray-500 mt-1 px-1">
-                Created at: 20/07/2024 - 04:53
+                Created at: {poll.created_at}
               </span>
             </div>
           </div>
@@ -56,7 +67,7 @@ export function PollPage(): ReactNode {
       </header>
       <div className="flex mx-2 border border-slate-600 mt-2">
         <span className="p-2 text-base select-text text-blue-300">
-          http://localhost:5173/polls/1
+          http://localhost:5173/polls/{poll.id}
         </span>
         <div className="flex-1"></div>
         <button
@@ -69,32 +80,25 @@ export function PollPage(): ReactNode {
       </div>
       <DividerComponent />
       <section className="flex flex-col items-stretch px-2">
-        <div className="border border-slate-600 flex items-center hover:border-white transition-colors duration-75 cursor-pointer justify-between">
-          <div className="flex items-center z-10 p-4">
-            <div className="p-px rounded-full border-2 mr-2 border-white/[0.45]">
-              <div className="m-1 bg-white size-6 rounded-full"></div>
-            </div>
-            <h1 className="text-2xl">My wife</h1>
-          </div>
-          <div className="flex items-center">
-            <span className="text-2xl">75%</span>
-            <span className="text-sm ml-2 mr-4">504</span>
-          </div>
-          <div className="absolute bg-amber-600 h-[68px] w-[600px]"></div>
-        </div>
-        <div className="p-4 border border-slate-600 flex items-center hover:border-white transition-colors duration-75 cursor-pointer justify-between mt-2">
-          <div className="flex items-center">
-            <div className="p-px rounded-full border-2 mr-2 border-white/[0.45]">
-              <div className="m-1 bg-transparent size-6 rounded-full"></div>
-            </div>
-            <h1 className="text-2xl">My kid</h1>
-          </div>
-          <div className="flex items-center">
-            <span className="text-2xl">15%</span>
-            <span className="text-sm ml-2">92</span>
-          </div>
-        </div>
+        {poll.options.map((opt: IOption, idx: number) =>
+          idx > 0 ? (
+            <OptionComponent key={idx} option={opt} className="mt-2" />
+          ) : (
+            <OptionComponent key={idx} option={opt} />
+          )
+        )}
       </section>
     </section>
+  );
+}
+
+export function PollPage(): ReactNode {
+  const { pollId } = useParams();
+  const pollPromise = apiService.getPollDetails(pollId!);
+
+  return (
+    <Suspense fallback={<h1>Loading</h1>}>
+      <PollContent pollPromise={pollPromise} />
+    </Suspense>
   );
 }

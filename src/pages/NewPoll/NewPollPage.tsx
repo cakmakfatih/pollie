@@ -4,7 +4,7 @@ import IconComponent from "../../components/Icon";
 import { useNavigate } from "react-router-dom";
 import IconButtonComponent from "../../components/IconButton";
 import { apiService } from "../../services/ApiService";
-import { Duration } from "../../types/Poll";
+import { Duration } from "../../shared/interfaces/poll.interface";
 import { Store } from "react-notifications-component";
 
 export function NewPollPage(): ReactNode {
