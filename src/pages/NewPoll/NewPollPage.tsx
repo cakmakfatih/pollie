@@ -12,9 +12,15 @@ export function NewPollPage(): ReactNode {
   const navigate = useNavigate();
   const titleInputId = useId();
   const durationSelectId = useId();
+  const votesVisibleCheckboxId = useId();
+  const usersCanChangeVotesCheckboxId = useId();
+  const isPrivateCheckboxId = useId();
 
   const titleRef = useRef<HTMLInputElement>(null);
   const durationRef = useRef<HTMLSelectElement>(null);
+  const votesVisibleRef = useRef<HTMLInputElement>(null);
+  const usersCanChangeVotesRef = useRef<HTMLInputElement>(null);
+  const isPrivateRef = useRef<HTMLInputElement>(null);
 
   const [options, setOptions] = useState<{ value: string }[]>([
     { value: "" },
@@ -45,6 +51,9 @@ export function NewPollPage(): ReactNode {
         title: titleRef.current?.value!,
         duration: durationRef.current?.value! as Duration,
         options,
+        is_private: isPrivateRef.current?.checked!,
+        votes_changable: usersCanChangeVotesRef.current?.checked!,
+        votes_visible: votesVisibleRef.current?.checked!,
       });
 
       if (createdPoll) {
@@ -79,7 +88,7 @@ export function NewPollPage(): ReactNode {
           onClick={() => navigate("/")}
           className="transition-opacity opacity-35 hover:opacity-100 active:opacity-50 duration-75"
         >
-          <IconComponent icon="back" className="mx-2" />
+          <IconComponent icon="back" className="mx-2 text-blue-300" />
         </button>
         <h1 className="text-2xl font-semibold tracking-wide">
           Create a New Poll
@@ -178,6 +187,51 @@ export function NewPollPage(): ReactNode {
               ]);
             }}
           />
+          <div className="flex items-center mt-4 px-2">
+            <input
+              id={votesVisibleCheckboxId}
+              ref={votesVisibleRef}
+              defaultChecked={true}
+              type="checkbox"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor={votesVisibleCheckboxId}
+              className="flex-1 ms-2 text-lg font-medium"
+            >
+              Votes are visible before voting
+            </label>
+          </div>
+          <div className="flex items-center px-2">
+            <input
+              id={usersCanChangeVotesCheckboxId}
+              ref={usersCanChangeVotesRef}
+              defaultChecked={true}
+              type="checkbox"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor={usersCanChangeVotesCheckboxId}
+              className="flex-1 ms-2 text-lg font-medium"
+            >
+              Users can change their votes
+            </label>
+          </div>
+          <div className="flex items-center px-2">
+            <input
+              id={isPrivateCheckboxId}
+              ref={isPrivateRef}
+              defaultChecked={false}
+              type="checkbox"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor={isPrivateCheckboxId}
+              className="flex-1 ms-2 text-lg font-medium"
+            >
+              Private (url is not shared on homepage)
+            </label>
+          </div>
           <DividerComponent />
           <IconButtonComponent
             onClick={handleSubmit}

@@ -1,12 +1,19 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense, use } from "react";
 import BorderedTitleComponent from "../../components/BorderedTitle";
 import DividerComponent from "../../components/Divider";
 import IconComponent from "../../components/Icon";
 import IconButtonComponent from "../../components/IconButton";
 import ListItemComponent from "../../components/ListItem";
 import { useNavigate } from "react-router-dom";
+import { apiService, GetPollsResponse } from "../../services/ApiService";
+import LoaderComponent from "../../components/Loader";
 
-export function HomePage(): ReactNode {
+function HomeContent({
+  pollsPromise,
+}: {
+  pollsPromise: Promise<GetPollsResponse>;
+}): ReactNode {
+  const recentPollsResponse = use(pollsPromise);
   const navigate = useNavigate();
 
   return (
@@ -27,28 +34,7 @@ export function HomePage(): ReactNode {
               icon={<IconComponent icon="dialog" className="mr-2" />}
               title="Your Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1">
-              <ListItemComponent
-                text="What was the last good book you read?"
-                className="bg-slate-600 hover:bg-slate-700"
-              />
-              <ListItemComponent
-                text="What are you most grateful for?"
-                className="mt-2 bg-slate-600 hover:bg-slate-700"
-              />
-              <ListItemComponent
-                text="Can you play any instruments?"
-                className="mt-2 bg-slate-600 hover:bg-slate-700"
-              />
-              <ListItemComponent
-                text="What is your favorite color?"
-                className="mt-2 bg-slate-600 hover:bg-slate-700"
-              />
-              <ListItemComponent
-                text="What are you most grateful for?"
-                className="mt-2 bg-slate-600 hover:bg-slate-700"
-              />
-            </ul>
+            <ul className="flex flex-col font-semibold select-none flex-1"></ul>
           </div>
         </aside>
         <div className="flex p-2 self-end">
@@ -58,30 +44,31 @@ export function HomePage(): ReactNode {
               title="Latest Polls"
             />
             <ul className="flex flex-col font-semibold select-none flex-1">
-              <ListItemComponent
-                text="What was the last good book you read?"
-                className="bg-cyan-600 hover:bg-cyan-700"
-              />
-              <ListItemComponent
-                text="What are you most grateful for?"
-                className="mt-2 bg-cyan-600 hover:bg-cyan-700"
-              />
-              <ListItemComponent
-                text="Can you play any instruments?"
-                className="mt-2 bg-cyan-600 hover:bg-cyan-700"
-              />
-              <ListItemComponent
-                text="What is your favorite color?"
-                className="mt-2 bg-cyan-600 hover:bg-cyan-700"
-              />
-              <ListItemComponent
-                text="Can you play any instruments?"
-                className="mt-2 bg-cyan-600 hover:bg-cyan-700"
-              />
+              {recentPollsResponse.results.map((poll, idx) => (
+                <ListItemComponent
+                  key={idx}
+                  text={poll.title}
+                  onClick={() => navigate(`/polls/${poll.id}`)}
+                  className={
+                    "bg-cyan-600 hover:bg-cyan-700 min-w-[350px]" +
+                    (idx > 0 ? " mt-1" : "")
+                  }
+                />
+              ))}
             </ul>
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+export function HomePage(): ReactNode {
+  const pollsPromise = apiService.getPolls();
+
+  return (
+    <Suspense fallback={<LoaderComponent />}>
+      <HomeContent pollsPromise={pollsPromise} />
+    </Suspense>
   );
 }

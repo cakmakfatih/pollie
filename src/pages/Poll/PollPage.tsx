@@ -7,6 +7,7 @@ import OptionComponent from "../../components/Option";
 import { apiService, GetPollDetailsResponse } from "../../services/ApiService";
 import { IOption } from "../../shared/interfaces/option.interface";
 import { API_URL } from "../../shared/constants";
+import LoaderComponent from "../../components/Loader";
 
 function PollContent({
   pollPromise,
@@ -100,7 +101,7 @@ export function PollPage(): ReactNode {
   const pollPromise = apiService.getPollDetails(pollId!);
 
   return (
-    <Suspense fallback={<h1>Loading</h1>}>
+    <Suspense fallback={<LoaderComponent />}>
       <PollContent pollPromise={pollPromise} />
     </Suspense>
   );

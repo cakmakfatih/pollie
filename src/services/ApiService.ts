@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { ICreatePoll } from "../shared/interfaces/poll.interface";
+import { ICreatePoll, IPoll } from "../shared/interfaces/poll.interface";
 import { API_URL } from "../shared/constants";
 
 export interface CreatePollResponse {
@@ -25,9 +25,17 @@ export interface GetPollDetailsResponse {
   created_at: string;
 }
 
+export interface GetPollsResponse {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: IPoll[];
+}
+
 interface IApiService {
   createPoll(createPollData: ICreatePoll): Promise<CreatePollResponse>;
   getPollDetails(pollId: string): Promise<GetPollDetailsResponse>;
+  getPolls(): Promise<GetPollsResponse>;
 }
 
 class ApiService implements IApiService {
@@ -35,6 +43,15 @@ class ApiService implements IApiService {
 
   constructor(httpClient: AxiosInstance) {
     this.#httpClient = httpClient;
+  }
+
+  async getPolls(): Promise<GetPollsResponse> {
+    const response = await this.#httpClient<GetPollsResponse>({
+      url: "/api/polls/",
+      method: "GET",
+    });
+
+    return response.data;
   }
 
   async createPoll(createPollData: ICreatePoll): Promise<CreatePollResponse> {

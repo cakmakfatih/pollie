@@ -1,4 +1,4 @@
-import { HomePage } from "./pages/Home/HomePage";
+import HomePage from "./pages/Home";
 import NewPollPage from "./pages/NewPoll";
 import PollPage from "./pages/Poll";
 
