@@ -6,12 +6,12 @@ export function ListItemComponent({
   text,
   icon = "comment",
   className = "",
-  onClick = null,
+  onClick,
 }: {
   text: string;
   icon?: Icon;
   className?: string;
-  onClick?: MouseEventHandler<HTMLLIElement> | null;
+  onClick?: MouseEventHandler<HTMLLIElement>;
 }): ReactNode {
   return (
     <li
