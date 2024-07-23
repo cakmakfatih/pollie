@@ -30,13 +30,13 @@ function HomeContent({
       />
       <DividerComponent />
       <div className="flex flex-row">
-        <aside className="min-w-[400px] flex flex-col items-stretch p-2">
+        <div className="min-w-[400px] flex flex-col items-stretch p-2">
           <div className="flex flex-col flex-1 mx-2">
             <BorderedTitleComponent
               icon={<IconComponent icon="dialog" className="mr-2" />}
               title="Your Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[50%] overflow-y-auto scrollbar-black">
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[30%] overflow-y-auto scrollbar-black">
               {savedPolls.length > 0 ? (
                 savedPolls.map((poll, idx) => (
                   <ListItemComponent
@@ -56,14 +56,14 @@ function HomeContent({
               )}
             </ul>
           </div>
-        </aside>
-        <div className="flex p-2 self-end">
+        </div>
+        <div className="min-w-[400px] flex flex-col items-stretch p-2">
           <div className="flex flex-col flex-1 mx-2">
             <BorderedTitleComponent
               icon={<IconComponent icon="globe" className="mr-2" />}
               title="Latest Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[50%] overflow-y-auto scrollbar-black">
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[30%] overflow-y-auto scrollbar-black">
               {recentPollsResponse.results.map((poll, idx) => (
                 <ListItemComponent
                   key={idx}

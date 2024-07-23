@@ -2,6 +2,7 @@ import {
   ReactNode,
   Suspense,
   use,
+  useEffect,
   useMemo,
   useState,
   useTransition,
@@ -33,33 +34,75 @@ function PollContent({
   const pollDetails: GetPollDetailsResponse = use(pollPromise);
   const [poll, setPoll] = useState(pollDetails);
   const [isPending, startTransition] = useTransition();
+  const [percentages, setPercentages] = useState<Percentages>({});
   const dateStr: string = useMemo(() => {
     const date = new Date(poll.created_at);
 
     return moment(date).fromNow();
-  }, [poll.id]);
-  const percentages: Percentages = useMemo(() => {
-    if (poll.votes === null) {
-      return {};
-    }
-
+  }, [poll.created_at]);
+  const setOptionPercents = (p: GetPollDetailsResponse) => {
     const result: Percentages = {};
+    const votes = p.votes !== null ? [...p.votes] : [];
 
-    const totalVotes = poll.votes.length;
+    const totalVotes = votes.length;
 
-    poll.options.forEach((opt) => {
-      const optVoteCount: number = poll.votes!.filter(
+    p.options.forEach((opt) => {
+      const optVoteCount: number = votes.filter(
         (i) => i.option === opt.id
       ).length;
 
       result[opt.id] = {
         voteCount: optVoteCount,
-        percentage: parseFloat(((optVoteCount / totalVotes) * 100).toFixed(2)),
+        percentage:
+          optVoteCount === 0
+            ? 0
+            : parseFloat(((optVoteCount / totalVotes) * 100).toFixed(2)),
       };
     });
 
-    return result;
-  }, [poll.votes]);
+    setPercentages(result);
+  };
+  const updatePollStatus = async () => {
+    const pollUpdatedData = await apiService.getPollDetails(poll.id);
+    setOptionPercents(pollUpdatedData);
+    setPoll(pollUpdatedData);
+  };
+  const secondsToMmSs = (remainingSeconds: number): string => {
+    if (poll.duration === "EM") {
+      return "No duration limit";
+    } else if (remainingSeconds === 0) {
+      return "Time is over";
+    }
+
+    return new Date(remainingSeconds * 1000).toISOString().substring(14, 19);
+  };
+  const [remainingTime, setRemainingTime] = useState<string>(
+    secondsToMmSs(poll.remaining_seconds)
+  );
+
+  useEffect(() => {
+    let pastSeconds = 0;
+    let remainingSeconds = poll.remaining_seconds;
+    setOptionPercents(poll);
+
+    const interval = setInterval(async () => {
+      pastSeconds += 1;
+      if (poll.duration !== "EM" && remainingSeconds > 0) {
+        remainingSeconds -= 1;
+
+        if (!(remainingSeconds < 0)) {
+          setRemainingTime(secondsToMmSs(remainingSeconds));
+        }
+      }
+
+      if (pastSeconds % 3 === 0) {
+        await updatePollStatus();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const vote = async (opt: IOption) => {
     startTransition(async () => {
       if (
@@ -82,8 +125,7 @@ function PollContent({
         option: opt.id!,
       });
 
-      const pollUpdatedData = await apiService.getPollDetails(poll.id);
-      setPoll(pollUpdatedData);
+      await updatePollStatus();
     });
   };
 
@@ -129,7 +171,7 @@ function PollContent({
           </div>
         </div>
         <div className="flex items-center border border-white/[0.15] py-1 px-2 self-start">
-          <span className="mr-2 text-2xl pl-1">05:00</span>
+          <span className="mr-2 text-2xl pl-1">{remainingTime}</span>
           <IconComponent icon="duration" size={8} />
         </div>
       </header>
@@ -176,13 +218,17 @@ function PollContent({
             disabled={!poll.is_votable || isPending}
             onClick={() => vote(opt)}
             percentage={
-              poll.votes !== null && poll.votes.length > 0
-                ? percentages[opt.id!].percentage
+              poll.votes && (poll.user_vote !== null || poll.votes_visible)
+                ? percentages[opt.id!]
+                  ? percentages[opt.id!].percentage
+                  : 0
                 : undefined
             }
             voteCount={
-              poll.votes !== null && poll.votes.length > 0
-                ? percentages[opt.id!].voteCount
+              poll.votes && (poll.user_vote !== null || poll.votes_visible)
+                ? percentages[opt.id!]
+                  ? percentages[opt.id!].voteCount
+                  : 0
                 : undefined
             }
             selected={poll.user_vote?.option === opt.id}
