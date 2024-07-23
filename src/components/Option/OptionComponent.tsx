@@ -25,7 +25,7 @@ export function OptionComponent({
     <button
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
-      className={`relative border enabled:border-slate-600 flex items-center enabled:hover:border-white enabled:active:bg-white/[0.15] transition-colors duration-75 cursor-pointer justify-between ${className} disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`relative border border-slate-600 flex items-center enabled:hover:border-white enabled:active:bg-white/[0.15] transition-colors duration-75 cursor-pointer justify-between ${className} disabled:cursor-not-allowed`}
     >
       <div className="flex items-center z-10 p-4">
         <div className="p-px rounded-full border-2 mr-2 border-white/[0.45]">
