@@ -1,4 +1,11 @@
-import { ReactNode, Suspense, use, useMemo, useState } from "react";
+import {
+  ReactNode,
+  Suspense,
+  use,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import DividerComponent from "../../components/Divider";
 import IconComponent from "../../components/Icon";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,8 +32,10 @@ function PollContent({
   const navigate = useNavigate();
   const pollDetails: GetPollDetailsResponse = use(pollPromise);
   const [poll, setPoll] = useState(pollDetails);
+  const [isPending, startTransition] = useTransition();
   const dateStr: string = useMemo(() => {
     const date = new Date(poll.created_at);
+
     return moment(date).fromNow();
   }, [poll.id]);
   const percentages: Percentages = useMemo(() => {
@@ -52,25 +61,30 @@ function PollContent({
     return result;
   }, [poll.votes]);
   const vote = async (opt: IOption) => {
-    if (poll.user_vote?.option !== null && poll.user_vote?.option === opt.id) {
-      return;
-    }
+    startTransition(async () => {
+      if (
+        poll.user_vote?.option !== null &&
+        poll.user_vote?.option === opt.id
+      ) {
+        return;
+      }
 
-    if (poll.remaining_seconds < 0 && poll.remaining_seconds !== -1) {
-      return;
-    }
+      if (poll.remaining_seconds < 0 && poll.remaining_seconds !== -1) {
+        return;
+      }
 
-    if (poll.user_vote?.option !== null && !poll.votes_changable) {
-      return;
-    }
+      if (poll.user_vote?.option !== null && !poll.votes_changable) {
+        return;
+      }
 
-    await apiService.votePoll({
-      poll: poll.id,
-      option: opt.id!,
+      await apiService.votePoll({
+        poll: poll.id,
+        option: opt.id!,
+      });
+
+      const pollUpdatedData = await apiService.getPollDetails(poll.id);
+      setPoll(pollUpdatedData);
     });
-
-    const pollUpdatedData = await apiService.getPollDetails(poll.id);
-    setPoll(pollUpdatedData);
   };
 
   const copyToClipboard = async () => {
@@ -139,6 +153,7 @@ function PollContent({
       <section className="flex flex-col items-stretch px-2">
         {poll.options.map((opt: IOption, idx: number) => (
           <OptionComponent
+            disabled={isPending}
             onClick={() => vote(opt)}
             percentage={
               poll.votes !== null && poll.votes.length > 0

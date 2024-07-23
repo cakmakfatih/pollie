@@ -1,5 +1,6 @@
 import { MouseEventHandler, ReactNode } from "react";
 import { IOption } from "../../shared/interfaces/option.interface";
+import { motion } from "framer-motion";
 
 interface OptionProps {
   option: IOption;
@@ -7,7 +8,8 @@ interface OptionProps {
   percentage?: number;
   voteCount?: number;
   className?: string;
-  onClick?: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
 }
 
 export function OptionComponent({
@@ -17,11 +19,13 @@ export function OptionComponent({
   voteCount,
   className = "",
   onClick,
+  disabled = false,
 }: OptionProps): ReactNode {
   return (
-    <div
-      onClick={onClick}
-      className={`relative border border-slate-600 flex items-center hover:border-white transition-colors duration-75 cursor-pointer justify-between ${className}`}
+    <button
+      disabled={disabled}
+      onClick={disabled ? undefined : onClick}
+      className={`relative border enabled:border-slate-600 flex items-center enabled:hover:border-white enabled:active:bg-white/[0.15] transition-colors duration-75 cursor-pointer justify-between ${className} disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       <div className="flex items-center z-10 p-4">
         <div className="p-px rounded-full border-2 mr-2 border-white/[0.45]">
@@ -31,18 +35,21 @@ export function OptionComponent({
         </div>
         <h1 className="text-2xl">{option.value}</h1>
       </div>
-      <div
-        style={{
+      <motion.div
+        initial={{
+          width: "0%",
+        }}
+        animate={{
           width: `${percentage ?? 0}%`,
         }}
         className="absolute self-stretch h-[100%] bg-amber-600"
-      ></div>
+      ></motion.div>
       <div className="flex items-center z-10">
         <span className="text-2xl">
           {typeof percentage !== "undefined" ? percentage + "%" : ""}
         </span>
         <span className="text-sm ml-2 mr-4">{voteCount ?? ""}</span>
       </div>
-    </div>
+    </button>
   );
 }

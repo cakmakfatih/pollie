@@ -13,6 +13,7 @@
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc",
     "axios": "^1.7.2",
+    "framer-motion": "^12.0.0-alpha.0",
     "moment": "^2.30.1",
     "react": "19.0.0-rc-512b09b2-20240718",
     "react-dom": "19.0.0-rc-512b09b2-20240718",
