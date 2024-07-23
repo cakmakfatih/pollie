@@ -42,7 +42,7 @@ export function OptionComponent({
         animate={{
           width: `${percentage ?? 0}%`,
         }}
-        className="absolute self-stretch h-[100%] bg-amber-600"
+        className="absolute self-stretch h-[100%] bg-amber-500"
       ></motion.div>
       <div className="flex items-center z-10">
         <span className="text-2xl">

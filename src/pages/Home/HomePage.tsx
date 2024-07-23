@@ -7,6 +7,7 @@ import ListItemComponent from "../../components/ListItem";
 import { useNavigate } from "react-router-dom";
 import { apiService, GetPollsResponse } from "../../services/ApiService";
 import LoaderComponent from "../../components/Loader";
+import storage from "../../core/Browser/storage";
 
 function HomeContent({
   pollsPromise,
@@ -15,6 +16,7 @@ function HomeContent({
 }): ReactNode {
   const recentPollsResponse = use(pollsPromise);
   const navigate = useNavigate();
+  const savedPolls = storage.getPolls();
 
   return (
     <>
@@ -34,7 +36,25 @@ function HomeContent({
               icon={<IconComponent icon="dialog" className="mr-2" />}
               title="Your Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1"></ul>
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[50%] overflow-y-auto scrollbar-black">
+              {savedPolls.length > 0 ? (
+                savedPolls.map((poll, idx) => (
+                  <ListItemComponent
+                    key={idx}
+                    text={poll.title}
+                    onClick={() => navigate(`/polls/${poll.id}`)}
+                    className={
+                      "bg-slate-700 hover:bg-slate-800 min-w-[350px]" +
+                      (idx > 0 ? " mt-1" : "")
+                    }
+                  />
+                ))
+              ) : (
+                <h1 className="px-2 py-px border-l-4 opacity-30 font-light">
+                  You haven't created any polls
+                </h1>
+              )}
+            </ul>
           </div>
         </aside>
         <div className="flex p-2 self-end">
@@ -43,7 +63,7 @@ function HomeContent({
               icon={<IconComponent icon="globe" className="mr-2" />}
               title="Latest Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1">
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[50%] overflow-y-auto scrollbar-black">
               {recentPollsResponse.results.map((poll, idx) => (
                 <ListItemComponent
                   key={idx}

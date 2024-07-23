@@ -10,6 +10,9 @@ export interface CreatePollResponse {
   title: string;
   duration: string;
   created_at: string;
+  votes_visible: boolean;
+  votes_changable: boolean;
+  is_private: boolean;
 }
 
 export interface GetPollDetailsResponse {

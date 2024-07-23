@@ -7,6 +7,7 @@ import { apiService } from "../../services/ApiService";
 import { Duration } from "../../shared/interfaces/poll.interface";
 import { Store } from "react-notifications-component";
 import { API_URL } from "../../shared/constants";
+import storage from "../../core/Browser/storage";
 
 export function NewPollPage(): ReactNode {
   const navigate = useNavigate();
@@ -47,14 +48,15 @@ export function NewPollPage(): ReactNode {
     if (!isOptionsValid) return false;
 
     startTransition(async () => {
-      const createdPoll = await apiService.createPoll({
+      const pollData = {
         title: titleRef.current?.value!,
         duration: durationRef.current?.value! as Duration,
         options,
         is_private: isPrivateRef.current?.checked!,
         votes_changable: usersCanChangeVotesRef.current?.checked!,
         votes_visible: votesVisibleRef.current?.checked!,
-      });
+      };
+      const createdPoll = await apiService.createPoll(pollData);
 
       if (createdPoll) {
         Store.addNotification({
@@ -70,6 +72,18 @@ export function NewPollPage(): ReactNode {
             duration: 2600,
             onScreen: true,
           },
+        });
+
+        storage.savePoll({
+          id: createdPoll.id,
+          remaining_seconds: createdPoll.remaining_seconds,
+          is_votable: createdPoll.is_votable,
+          title: createdPoll.title,
+          duration: createdPoll.duration,
+          votes_visible: createdPoll.votes_visible,
+          votes_changable: createdPoll.votes_changable,
+          is_private: createdPoll.is_private,
+          created_at: createdPoll.created_at,
         });
 
         await navigator.clipboard.writeText(
