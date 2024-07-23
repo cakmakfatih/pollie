@@ -32,6 +32,7 @@ export interface GetPollDetailsResponse {
   votes_changable: boolean;
   user_vote: null | { option: number };
   created_at: string;
+  is_votable: boolean;
 }
 
 export interface VoteResponse {

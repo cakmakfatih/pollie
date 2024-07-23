@@ -16,7 +16,8 @@ export type Icon =
   | "date"
   | "share"
   | "copy"
-  | "forward";
+  | "forward"
+  | "warn";
 
 export type IconSize = 6 | 8 | 10 | 12;
 export type IconColor = "white" | "primary" | "black";
@@ -321,6 +322,23 @@ export function IconComponent({
             strokeLinecap="round"
             strokeLinejoin="round"
             d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3"
+          />
+        </svg>
+      );
+    case "warn":
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className={iconClassName}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
           />
         </svg>
       );

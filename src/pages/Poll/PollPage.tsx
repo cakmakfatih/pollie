@@ -149,11 +149,31 @@ function PollContent({
           <span className="ml-1 font-bold">Copy</span>
         </button>
       </div>
+      {!poll.is_votable && (
+        <div
+          className="mt-2 mx-2 bg-red-200 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
+          role="alert"
+        >
+          <div className="flex">
+            <div className="py-1">
+              <IconComponent
+                icon="warn"
+                size={8}
+                className="mr-2 text-red-500"
+              />
+            </div>
+            <div>
+              <p className="font-bold">This poll is closed.</p>
+              <p className="text-sm">You can't vote for it any more.</p>
+            </div>
+          </div>
+        </div>
+      )}
       <DividerComponent />
       <section className="flex flex-col items-stretch px-2">
         {poll.options.map((opt: IOption, idx: number) => (
           <OptionComponent
-            disabled={isPending}
+            disabled={!poll.is_votable || isPending}
             onClick={() => vote(opt)}
             percentage={
               poll.votes !== null && poll.votes.length > 0
