@@ -11,7 +11,7 @@ export function ListItemComponent({
   text: string;
   icon?: Icon;
   className?: string;
-  onClick?: MouseEventHandler<HTMLLIElement>;
+  onClick?: MouseEventHandler;
 }): ReactNode {
   return (
     <li

@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, use, useMemo } from "react";
+import { ReactNode, Suspense, use, useMemo, useState } from "react";
 import DividerComponent from "../../components/Divider";
 import IconComponent from "../../components/Icon";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,6 +8,14 @@ import { apiService, GetPollDetailsResponse } from "../../services/ApiService";
 import { IOption } from "../../shared/interfaces/option.interface";
 import { API_URL } from "../../shared/constants";
 import LoaderComponent from "../../components/Loader";
+import moment from "moment";
+
+interface Percentages {
+  [optId: string]: {
+    voteCount: number;
+    percentage: number;
+  };
+}
 
 function PollContent({
   pollPromise,
@@ -15,11 +23,55 @@ function PollContent({
   pollPromise: Promise<GetPollDetailsResponse>;
 }): ReactNode {
   const navigate = useNavigate();
-  const poll: GetPollDetailsResponse = use(pollPromise);
+  const pollDetails: GetPollDetailsResponse = use(pollPromise);
+  const [poll, setPoll] = useState(pollDetails);
   const dateStr: string = useMemo(() => {
     const date = new Date(poll.created_at);
-    return date.toLocaleString();
+    return moment(date).fromNow();
   }, [poll.id]);
+  const percentages: Percentages = useMemo(() => {
+    if (poll.votes === null) {
+      return {};
+    }
+
+    const result: Percentages = {};
+
+    const totalVotes = poll.votes.length;
+
+    poll.options.forEach((opt) => {
+      const optVoteCount: number = poll.votes!.filter(
+        (i) => i.option === opt.id
+      ).length;
+
+      result[opt.id] = {
+        voteCount: optVoteCount,
+        percentage: parseFloat(((optVoteCount / totalVotes) * 100).toFixed(2)),
+      };
+    });
+
+    return result;
+  }, [poll.votes]);
+  const vote = async (opt: IOption) => {
+    if (poll.user_vote?.option !== null && poll.user_vote?.option === opt.id) {
+      return;
+    }
+
+    if (poll.remaining_seconds < 0 && poll.remaining_seconds !== -1) {
+      return;
+    }
+
+    if (poll.user_vote?.option !== null && !poll.votes_changable) {
+      return;
+    }
+
+    await apiService.votePoll({
+      poll: poll.id,
+      option: opt.id!,
+    });
+
+    const pollUpdatedData = await apiService.getPollDetails(poll.id);
+    setPoll(pollUpdatedData);
+  };
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(`${API_URL}/polls/${poll.id}`);
@@ -58,9 +110,7 @@ function PollContent({
             </h1>
             <div className="flex items-center">
               <IconComponent icon="date" size={8} className="text-gray-400" />
-              <span className="text-gray-500 mt-1 px-1">
-                Created at: {dateStr}
-              </span>
+              <span className="text-gray-500 mt-1 px-1">Created {dateStr}</span>
             </div>
           </div>
         </div>
@@ -70,7 +120,10 @@ function PollContent({
         </div>
       </header>
       <div className="flex mx-2 border border-slate-600 mt-2">
-        <span className="p-2 text-base select-all text-blue-300">
+        <span
+          className="p-2 text-base select-all text-blue-300"
+          onClick={copyToClipboard}
+        >
           http://localhost:5173/polls/{poll.id}
         </span>
         <div className="flex-1"></div>
@@ -84,13 +137,25 @@ function PollContent({
       </div>
       <DividerComponent />
       <section className="flex flex-col items-stretch px-2">
-        {poll.options.map((opt: IOption, idx: number) =>
-          idx > 0 ? (
-            <OptionComponent key={idx} option={opt} className="mt-2" />
-          ) : (
-            <OptionComponent key={idx} option={opt} />
-          )
-        )}
+        {poll.options.map((opt: IOption, idx: number) => (
+          <OptionComponent
+            onClick={() => vote(opt)}
+            percentage={
+              poll.votes !== null && poll.votes.length > 0
+                ? percentages[opt.id!].percentage
+                : undefined
+            }
+            voteCount={
+              poll.votes !== null && poll.votes.length > 0
+                ? percentages[opt.id!].voteCount
+                : undefined
+            }
+            selected={poll.user_vote?.option === opt.id}
+            key={idx}
+            option={opt}
+            className={idx > 0 ? "mt-2" : ""}
+          />
+        ))}
       </section>
     </section>
   );

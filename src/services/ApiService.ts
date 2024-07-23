@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { ICreatePoll, IPoll } from "../shared/interfaces/poll.interface";
 import { API_URL } from "../shared/constants";
+import { IVote } from "../shared/interfaces/vote.interface";
 
 export interface CreatePollResponse {
   id: string;
@@ -17,12 +18,24 @@ export interface GetPollDetailsResponse {
     id: number;
     value: string;
   }[];
-  votes?: {
-    option: number;
-  }[];
+  votes:
+    | null
+    | {
+        option: number;
+      }[];
   remaining_seconds: number;
   title: string;
+  votes_visible: boolean;
+  votes_changable: boolean;
+  user_vote: null | { option: number };
   created_at: string;
+}
+
+export interface VoteResponse {
+  id: number;
+  user: number;
+  option: number;
+  poll: string;
 }
 
 export interface GetPollsResponse {
@@ -36,6 +49,7 @@ interface IApiService {
   createPoll(createPollData: ICreatePoll): Promise<CreatePollResponse>;
   getPollDetails(pollId: string): Promise<GetPollDetailsResponse>;
   getPolls(): Promise<GetPollsResponse>;
+  votePoll(vote: IVote): Promise<VoteResponse>;
 }
 
 class ApiService implements IApiService {
@@ -68,6 +82,16 @@ class ApiService implements IApiService {
     const response = await this.#httpClient<GetPollDetailsResponse>({
       url: `/api/polls/${pollId}`,
       method: "GET",
+    });
+
+    return response.data;
+  }
+
+  async votePoll(vote: IVote): Promise<VoteResponse> {
+    const response = await this.#httpClient<VoteResponse>({
+      url: "/api/votes/",
+      method: "POST",
+      data: vote,
     });
 
     return response.data;
