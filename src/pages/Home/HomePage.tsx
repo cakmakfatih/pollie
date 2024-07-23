@@ -36,7 +36,7 @@ function HomeContent({
               icon={<IconComponent icon="dialog" className="mr-2" />}
               title="Your Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[30%] overflow-y-auto scrollbar-black">
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 h-[30%] overflow-y-auto scrollbar-black">
               {savedPolls.length > 0 ? (
                 savedPolls.map((poll, idx) => (
                   <ListItemComponent
@@ -50,8 +50,8 @@ function HomeContent({
                   />
                 ))
               ) : (
-                <h1 className="px-2 py-px border-l-4 opacity-30 font-light">
-                  You haven't created any polls
+                <h1 className="px-3 py-px opacity-30 font-light">
+                  You haven't created any polls.
                 </h1>
               )}
             </ul>
@@ -63,18 +63,24 @@ function HomeContent({
               icon={<IconComponent icon="globe" className="mr-2" />}
               title="Latest Polls"
             />
-            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 max-h-[30%] overflow-y-auto scrollbar-black">
-              {recentPollsResponse.results.map((poll, idx) => (
-                <ListItemComponent
-                  key={idx}
-                  text={poll.title}
-                  onClick={() => navigate(`/polls/${poll.id}`)}
-                  className={
-                    "bg-cyan-600 hover:bg-cyan-700 min-w-[350px]" +
-                    (idx > 0 ? " mt-1" : "")
-                  }
-                />
-              ))}
+            <ul className="flex flex-col font-semibold select-none flex-1 min-h-0 h-[30%] overflow-y-auto scrollbar-black">
+              {recentPollsResponse.results.length > 0 ? (
+                recentPollsResponse.results.map((poll, idx) => (
+                  <ListItemComponent
+                    key={idx}
+                    text={poll.title}
+                    onClick={() => navigate(`/polls/${poll.id}`)}
+                    className={
+                      "bg-cyan-600 hover:bg-cyan-700 min-w-[350px]" +
+                      (idx > 0 ? " mt-1" : "")
+                    }
+                  />
+                ))
+              ) : (
+                <h1 className="px-3 py-px opacity-30 font-light">
+                  There are no public polls.
+                </h1>
+              )}
             </ul>
           </div>
         </div>

@@ -14,7 +14,7 @@ import { Store } from "react-notifications-component";
 import OptionComponent from "../../components/Option";
 import { apiService, GetPollDetailsResponse } from "../../services/ApiService";
 import { IOption } from "../../shared/interfaces/option.interface";
-import { API_URL } from "../../shared/constants";
+import { APP_URL } from "../../shared/constants";
 import LoaderComponent from "../../components/Loader";
 import moment from "moment";
 
@@ -130,7 +130,7 @@ function PollContent({
   };
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(`${API_URL}/polls/${poll.id}`);
+    await navigator.clipboard.writeText(`${APP_URL}/polls/${poll.id}`);
     Store.addNotification({
       title: "Successful!",
       message: "Poll URL is successfully copied to clipboard!",
@@ -180,7 +180,7 @@ function PollContent({
           className="p-2 text-base select-all text-blue-300"
           onClick={copyToClipboard}
         >
-          http://localhost:5173/polls/{poll.id}
+          {APP_URL}/polls/{poll.id}
         </span>
         <div className="flex-1"></div>
         <button
