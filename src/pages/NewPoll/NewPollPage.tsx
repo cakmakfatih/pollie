@@ -6,7 +6,7 @@ import IconButtonComponent from "../../components/IconButton";
 import { apiService } from "../../services/ApiService";
 import { Duration } from "../../shared/interfaces/poll.interface";
 import { Store } from "react-notifications-component";
-import { API_URL } from "../../shared/constants";
+import { APP_URL } from "../../shared/constants";
 import storage from "../../core/Browser/storage";
 
 export function NewPollPage(): ReactNode {
@@ -87,7 +87,7 @@ export function NewPollPage(): ReactNode {
         });
 
         await navigator.clipboard.writeText(
-          `${API_URL}/polls/${createdPoll.id}`
+          `${APP_URL}/polls/${createdPoll.id}`
         );
 
         navigate(`/polls/${createdPoll.id}`);
